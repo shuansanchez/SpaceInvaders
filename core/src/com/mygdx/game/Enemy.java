@@ -63,9 +63,6 @@ public class Enemy extends Sprite implements Runnable {
             } catch (InterruptedException e) {
 
             }
-
         }while(salir == false);
-
-
     }
 }

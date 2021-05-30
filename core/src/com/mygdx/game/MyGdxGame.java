@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
@@ -20,26 +19,21 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 	private static int VIDES_JUGADOR=3;
 	//BATCH
 	private  SpriteBatch batch;
-
 	//ARRAYS
 	private ArrayList<Bullet>conjuntTretsJugador;
 	private ArrayList<Enemy>conjuntEnemics;
 	private ArrayList<EnemyBullet>conjuntTretsEnemics;
-
 	//TEXTURES
 	private Texture texturaNau;
 	private Texture texturaEliminat;
 	private Texture texturaTret;
 	private Texture texturaEnemic;
-
 	//SPRITES
 	private Sprite jugador;
 	private Sprite balaAmiga;
-
 	//BITMAPS
 	private BitmapFont fontP;
 	private BitmapFont font;
-
 	//INTS
 	private int contadorNave;
 	private int videsJugador;
@@ -48,15 +42,13 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 	private int XEn;
 	private int YEn;
 	private  int[] vidasE;
-
 	//BOOLEANS
 	private boolean guanyat;
 	private boolean perdut;
-
+	//STRINGS
 	String fontV;
-
-	//CLASSES
-	private Player nave;
+	//OBJECTS
+	private Player nau;
 	private Bullet b;
 
 	@Override
@@ -87,7 +79,6 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		texturaTret = new Texture("tret.png");
 		texturaEnemic = new Texture("nau2.png");
 
-
 		//JOC
 		batch = new SpriteBatch();
 
@@ -101,7 +92,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		jugador.setY(100);
 
 
-		nave = new Player(jugador);
+		nau = new Player(jugador);
 
 		nEnemics = 1;
 	}
@@ -111,35 +102,38 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		Gdx.gl.glClearColor(0,0,0,1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
 		batch.begin();
 		font.getData().setScale(2.5F);
 		font.draw(batch, fontV + videsJugador, 10, 60);
 
-		nave.getSprite().draw(batch);
-		if(perdut)
+		nau.getSprite().draw(batch);
+		if(perdut)	//CHECK PERDUT
 		{
 			fontP.getData().setScale(10.5F);
 			fontP.getColor().set(Color.RED);
 			fontP.draw(batch, "YOU LOST", Gdx.graphics.getWidth()/10, Gdx.graphics.getHeight()/2);
 		}
-		else if(guanyat)
+		else if(guanyat)	//CHECK GUANYAT
 		{
 			fontP.getData().setScale(10.5F);
 			fontP.getColor().set(Color.GREEN);
 			fontP.draw(batch, "YOU WON", Gdx.graphics.getWidth()/10, Gdx.graphics.getHeight()/2);
 		}
-		else if(conjuntEnemics.size() > 0) {
+		else if(conjuntEnemics.size() > 0) {	//SI NO PERDUT NI GUANYAT, JUGAR
+
+			//DIBUIXAR ENEMICS
 			for (int y = 0; y < conjuntEnemics.size(); y++) {
 				batch.draw(conjuntEnemics.get(y).getTexture(), conjuntEnemics.get(y).getX(), conjuntEnemics.get(y).getY());
 			}
 
+			//TRETS ENEMICS
 			if(conjuntTretsEnemics.size() > 0) {
 				for (int d = 0; d < conjuntTretsEnemics.size(); d++) {
 					batch.draw(conjuntTretsEnemics.get(d).getTexture(), conjuntTretsEnemics.get(d).getX(), conjuntTretsEnemics.get(d).getY());
 				}
 			}
 
+			//CHECK TRETS JUGADOR(NAU) VS ENEMICS
 			if (conjuntTretsJugador.size() > 0) {
 				for (int i = 0; i < conjuntTretsJugador.size(); i++) {
 					Bullet b2 = conjuntTretsJugador.get(i);
@@ -149,6 +143,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 
 					for (int x = 0; x < conjuntEnemics.size(); x++) {
 						for (int j = 0; j < conjuntTretsJugador.size(); j++) {
+							//SI ARRIBEN A DALT, ESBORRAR TRETS
 							if(conjuntTretsJugador.get(j).getY() > Gdx.graphics.getHeight())
 							{
 								conjuntTretsJugador.remove(conjuntTretsJugador.get(j));
@@ -168,6 +163,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 				}
 			}
 
+			//CHECK TRETS ENEMICS VS JUGADOR(NAU)
 			if(conjuntTretsEnemics.size() != 0 && conjuntEnemics.size() != 0)
 			{
 				for(int i = 0; i < conjuntTretsEnemics.size(); i++)
@@ -179,15 +175,15 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 						conjuntTretsEnemics.remove(b4);
 					}
 
-					if (b4.getX() < nave.getSprite().getX() + nave.getSprite().getTexture().getWidth() && b4.getX() > nave.getSprite().getX()) {
+					if (b4.getX() < nau.getSprite().getX() + nau.getSprite().getTexture().getWidth() && b4.getX() > nau.getSprite().getX()) {
 
 						if (b4.getY() + b4.getHeight() >= 100) {
-							if(nave.getSprite().getTexture() != texturaEliminat) {
+							if(nau.getSprite().getTexture() != texturaEliminat) {
 								if (contadorNave <= 0) {
 									videsJugador -= 1;
 									contadorNave = 100;
 									if (videsJugador == 0) {
-										nave.getSprite().setTexture(texturaEliminat);
+										nau.getSprite().setTexture(texturaEliminat);
 										perdut = true;
 									}
 								}
@@ -255,7 +251,6 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		}
 		else
 		{
-
 			boolean salir = false;
 			do {
 				if(conjuntEnemics.size()!= 0) {
@@ -290,28 +285,27 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		switch(keycode)
 		{
 			case Input.Keys.DPAD_LEFT:
-				if(nave.getSprite().getTexture() != texturaEliminat) {
-					float novaPos = nave.getSprite().getX() - 40;
+				if(nau.getSprite().getTexture() != texturaEliminat) {
+					float novaPos = nau.getSprite().getX() - 40;
 					if (novaPos >= 0) {
-						nave.getSprite().setX(novaPos);
+						nau.getSprite().setX(novaPos);
 					}
 				}
 				break;
 			case Input.Keys.DPAD_RIGHT:
-				if(nave.getSprite().getTexture() != texturaEliminat) {
-					float novaPos2 = nave.getSprite().getX() + 40;
+				if(nau.getSprite().getTexture() != texturaEliminat) {
+					float novaPos2 = nau.getSprite().getX() + 40;
 					if (novaPos2 <= ancho - jugador.getWidth()) {
-						nave.getSprite().setX(novaPos2);
+						nau.getSprite().setX(novaPos2);
 					}
 				}
 				break;
 			case Input.Keys.DPAD_UP:
-				if(nave.getSprite().getTexture() != texturaEliminat) {
-					b = new Bullet(texturaTret, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), texturaTret.getWidth(), texturaTret.getHeight());
-					float alt = 100;
+				if(nau.getSprite().getTexture() != texturaEliminat) {
+					b = new Bullet(texturaTret, (int) nau.getSprite().getX(), (int) nau.getSprite().getY(), texturaTret.getWidth(), texturaTret.getHeight());
 
-					b.setY(alt);
-					b.setX(nave.getSprite().getX() + (nave.getSprite().getWidth() / 2));
+					b.setY(100);
+					b.setX(nau.getSprite().getX() + (nau.getSprite().getWidth() / 2));
 					conjuntTretsJugador.add(b);
 				}
 				break;
@@ -343,15 +337,14 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if(nave.getSprite().getTexture() != texturaEliminat) {
+		if(nau.getSprite().getTexture() != texturaEliminat) {
 
-			nave.getSprite().setX(screenX);
+			nau.getSprite().setX(screenX);
 
-			b = new Bullet(texturaTret, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), texturaTret.getWidth(), texturaTret.getHeight());
-			float alt = 100;
+			b = new Bullet(texturaTret, (int) nau.getSprite().getX(), (int) nau.getSprite().getY(), texturaTret.getWidth(), texturaTret.getHeight());
 
-			b.setY(alt);
-			b.setX(nave.getSprite().getX() + (nave.getSprite().getWidth() / 2));
+			b.setY(100);
+			b.setX(nau.getSprite().getX() + (nau.getSprite().getWidth() / 2));
 			conjuntTretsJugador.add(b);
 
 		}
