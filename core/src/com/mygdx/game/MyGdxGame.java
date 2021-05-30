@@ -18,142 +18,374 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import java.util.ArrayList;
 
 public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Runnable {
-	SpriteBatch batch;
-	SpriteBatch batchEnemiga;
+	//BATCH
+	private  SpriteBatch batch;
 
-	private Texture nau;
-	private Texture nauEnemiga;
+	//ARRAYS
+	private ArrayList<Bullet>balas;
+	private ArrayList<Enemy>enemigosNaves;
+	private ArrayList<EnemyBullet>balasE;
 
-	private int textx, texty;
-	static private int SCREEN_HEIGHT, SCREEN_WIDTH;
+	//TEXTURES
+	private Texture img;
+	private Texture imgElim;
+	private Texture imgbala;
+	private Texture imgEnemy;
 
+	//SPRITES
+	private Sprite jugador;
+	private Sprite balaAmiga;
+
+	//BITMAPS
+	private BitmapFont fontP;
 	private BitmapFont font;
-	private String text;
+	private BitmapFont fontVidas;
 
-	private Sprite spriteNau;
-	private Sprite spriteNauEnemiga;
-	private ArrayList<Sprite> spriteNaus2;
+	//INTS
+	private int contadorNave;
+	private int vidasNave;
+	private int ancho;
+	private int contadorEne;
+	private int disparoC;
+	private int XEn;
+	private int YEn;
 
-	private int XEnemiga;
 
-	private Vector2 lastTouch = new Vector2();
+	String fontV;
 
-	private ShapeRenderer sr;
+
+
+
+	private  int[] vidasE;
+	private boolean perdido;
+
+
+	private Player nave;
+	private Enemy naveEne;
+	private Bullet b;
+	private EnemyBullet bE;
+
+	private boolean bol;
+	private boolean acabado;
+
 
 	@Override
 	public void create () {
 		Gdx.input.setInputProcessor(this);
-		//ATRIBUTS
-		SCREEN_HEIGHT= Gdx.graphics.getHeight()-100;
-		SCREEN_WIDTH=Gdx.graphics.getWidth()-10;
+		Gdx.input.setInputProcessor(this);
+		//INICIALITZACIO
+		perdido = false;
+		acabado = false;
+		vidasE = new int[7];
+		contadorNave = 100;
+		vidasNave = 3;
 
+		fontV = "Vidas: ";
+		font = new BitmapFont();
+		fontVidas = new BitmapFont();
+		fontP = new BitmapFont();
+		imgEnemy = new Texture("nau2.png");
+		XEn = Gdx.graphics.getWidth()/2;
+		YEn = Gdx.graphics.getHeight() -80;
+
+		//ARRAYS
+		balas = new ArrayList<>();
+		balasE = new ArrayList<>();
+		enemigosNaves = new ArrayList<>();
+
+		//TEXTURES
+		img = new Texture("nau1.png");
+		imgElim = new Texture("nau2e.png");
+		imgbala = new Texture("tret.png");
+
+		//NAU AMIGA
+
+		//NAU ENEMIGA
+
+		//BALES
 		batch = new SpriteBatch();
-		batchEnemiga=new SpriteBatch();
-		spriteNaus2=new ArrayList<Sprite>();
-		sr=new ShapeRenderer();
 
-		nau = new Texture("nau1.png");
-		nauEnemiga = new Texture("nau2.png");
+		balaAmiga = new Sprite(imgbala, 0,0,imgbala.getWidth(),imgbala.getHeight());
+		jugador = new Sprite(img, 0, 0, img.getWidth(), img.getHeight());
 
-		font=new BitmapFont();
+		balaAmiga.setY(100);
+		ancho = Gdx.graphics.getWidth();
 
-		text="SPACE INVADERS";
-		textx=25;
-		texty=30;
+		jugador.setX((ancho-jugador.getWidth())/2);
+		jugador.setY(100);
 
 
+		nave = new Player(jugador);
 
-		spriteNau=new Sprite(nau, 0,0,nau.getWidth(), nau.getHeight());
-		spriteNau.setX((SCREEN_WIDTH-nau.getWidth())/2);
-		spriteNau.setY((SCREEN_HEIGHT-nau.getHeight())/4);
+		disparoC = 0;
+		contadorEne = 1;
+		bol = false;
 
-
-		spriteNauEnemiga=new Sprite(nauEnemiga, 300,1000,nauEnemiga.getWidth(), nauEnemiga.getHeight());
-		/*spriteNauEnemiga.setX((SCREEN_WIDTH-nau.getWidth())/2);*/
-		spriteNauEnemiga.setY((SCREEN_HEIGHT-nau.getHeight())-200);
-		Thread thread=new Thread(this);
-		thread.start();
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(0,0,0,1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+
 		batch.begin();
-
-		//DIBUIX
-		//----NAUS
-		batch.draw(nau, spriteNau.getX(), spriteNau.getY());
-		batch.draw(nauEnemiga, XEnemiga, spriteNauEnemiga.getY());
-
-		//----FIGURES-TEXT
-
 		font.getData().setScale(2.5F);
-		font.setColor(Color.GREEN);
-		font.draw(batch, text, textx, texty);
+		font.draw(batch, fontV + vidasNave, 10, 60);
+
+		nave.getSprite().draw(batch);
+		if(perdido == true)
+		{
+			fontP.getData().setScale(10.5F);
+			fontP.getColor().set(Color.RED);
+			fontP.draw(batch, "HAS PERDIDO", Gdx.graphics.getWidth()/10, Gdx.graphics.getHeight()/2);
+		}
+		if(acabado == true)
+		{
+			fontP.getData().setScale(10.5F);
+			fontP.getColor().set(Color.GREEN);
+			fontP.draw(batch, "HAS GANADO", Gdx.graphics.getWidth()/10, Gdx.graphics.getHeight()/2);
+		}
+		if(enemigosNaves.size() != 0) {
+			for (int y = 0; y < enemigosNaves.size(); y++) {
+				//enemigosNaves.get(y).getNaveEnemy().draw(batch);
+				batch.draw(enemigosNaves.get(y).getTexture(), enemigosNaves.get(y).getX(), enemigosNaves.get(y).getY());
 
 
-		//linia inferior
-/*
-		sr.begin(ShapeRenderer.ShapeType.Line);
-		sr.setColor(Color.YELLOW);
-		sr.rect(0,0,SCREEN_WIDTH+100, 100);
-		sr.end();
-*/
+			}
+			if(balasE.size() != 0) {
+				for (int d = 0; d < balasE.size(); d++) {
+					batch.draw(balasE.get(d).getTexture(), balasE.get(d).getX(), balasE.get(d).getY());//balasE.get(d).draw(batch);
+				}
+			}
+			if (balas.size() != 0) {
+				for (int i = 0; i < balas.size(); i++) {
+					Bullet b2 = balas.get(i);
+					Thread r = new Thread(b2);
+					r.start();
+					batch.draw(imgbala, b2.getX(), b2.getY());
 
-		//FINAL
+
+					for (int x = 0; x < enemigosNaves.size(); x++) {
+						for (int j = 0; j < balas.size(); j++) {
+							if(balas.get(j).getY() > Gdx.graphics.getHeight())
+							{
+								balas.remove(balas.get(j));
+
+							}
+							if (enemigosNaves.get(x).getX()  < b2.getX() && b2.getX() < enemigosNaves.get(x).getX() + enemigosNaves.get(x).getTexture().getWidth()) {
+
+								if (b2.getY() + b2.getHeight()< enemigosNaves.get(x).getY() ) {
+
+									if (vidasE[x] != 0) {
+
+										vidasE[x] -= 1;
+
+									}
+
+									else {
+										enemigosNaves.get(x).setTexture(imgElim);
+									}
+
+
+
+								}
+							}
+						}
+					}
+
+
+				}
+
+
+			}
+
+
+			if(balasE.size() != 0 && enemigosNaves.size() != 0)
+			{
+				for(int i = 0; i < balasE.size(); i++)
+				{
+					EnemyBullet b4 = balasE.get(i);
+
+					if(balasE.get(i).getY() < -Gdx.graphics.getHeight() + (float)50)
+					{
+						balasE.remove(b4);
+
+					}
+					if (b4.getX() < nave.getSprite().getX() + nave.getSprite().getTexture().getWidth() && b4.getX() > nave.getSprite().getX()) {
+
+						if (b4.getY() + b4.getHeight() >= 100) {
+							if(nave.getSprite().getTexture() != imgElim) {
+								if (contadorNave <= 0) {
+
+									vidasNave -= 1;
+									contadorNave = 100;
+
+									if (vidasNave == 0) {
+										nave.getSprite().setTexture(imgElim);
+										perdido = true;
+									}
+
+								}
+								contadorNave--;
+							}
+
+
+						}
+					}
+
+				}
+			}
+
+		}
+
+		if(balas != null)
+		{
+			/*for(int z = 0; z < balas.size(); z++) {
+				b.draw(batch);
+				Thread r = new Thread(b);
+				r.start();
+			}*/
+		}
+
+
+
+		if(contadorEne <3) {
+			contadorEne++;
+			Thread t = new Thread(this);
+			t.start();
+
+
+		}
+
 		batch.end();
+
+
+
+
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
+		img.dispose();
+		imgEnemy.dispose();
 	}
 
 	@Override
 	public void run() {
-		//moure enemics
 
-		for(XEnemiga=0; XEnemiga<SCREEN_WIDTH-20;XEnemiga+=5){
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		if(enemigosNaves.size() == 0) {
+			int i = 0;
+			do {
+
+				i = enemigosNaves.size();
+
+				Enemy e = new Enemy(imgEnemy, XEn, YEn, imgEnemy.getWidth(), imgEnemy.getHeight());
+
+				e.setX(ancho);
+
+				enemigosNaves.add(e);
+				vidasE[i] = 10;
+
+				Thread trr = new Thread(enemigosNaves.get(i));
+				trr.start();
+
+
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}while(i != 6);
+			int c;
+			do {
+				c = 0;
+				for(int z = 0; z < enemigosNaves.size(); z++) {
+					if (enemigosNaves.get(z).getTexture() == imgElim)
+					{
+						c++;
+					}
+				}
+
+			}while(c != 7);
+			acabado = true;
+		}
+		else
+		{
+
+			boolean salir = false;
+			do {
+				if(enemigosNaves.size()!= 0) {
+
+					for (int y = 0; y < enemigosNaves.size(); y++) {
+						//if (enemigosNaves.get(y).getTexture() != imgElim) {
+						EnemyBullet b3 = new EnemyBullet(imgbala, 0, 0, (int) enemigosNaves.get(y).getWidth(), (int) enemigosNaves.get(y).getHeight());
+						int ancho = (int) enemigosNaves.get(y).getX() + ((int) enemigosNaves.get(y).getWidth() / 2);
+						int alto = (int) enemigosNaves.get(y).getY();
+						b3.setX(ancho);
+						b3.setY(alto);
+
+						Thread tx = new Thread(b3);
+						if(enemigosNaves.get(y).getTexture() != imgElim) {
+							tx.start();
+							balasE.add(b3);
+
+							try {
+								Thread.sleep(150);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						//}
+							/*else
+							{
+								y--;
+							}*/
+					}
+				}
+
+			}while(salir == false);
+
+
+
 		}
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
-		switch (keycode){
+		switch(keycode)
+		{
 			case Input.Keys.DPAD_LEFT:
-				if(spriteNau.getX()>10){
-					spriteNau.setX(spriteNau.getX()-20);
+				if(nave.getSprite().getTexture() != imgElim) {
+					float novaPos = nave.getSprite().getX() - 40;
+					if (novaPos >= 0) {
+						nave.getSprite().setX(novaPos);
+					}
 				}
 				break;
 			case Input.Keys.DPAD_RIGHT:
-				if((spriteNau.getX()+nau.getWidth())<SCREEN_WIDTH){
-					spriteNau.setX(spriteNau.getX()+20);
-				}
-				break;
-				/*
-			case Input.Keys.DPAD_DOWN:
-				if(spriteNau.getY()>120){
-					spriteNau.setY(spriteNau.getY()-20);
+				if(nave.getSprite().getTexture() != imgElim) {
+					float novaPos2 = nave.getSprite().getX() + 40;
+					if (novaPos2 <= ancho - jugador.getWidth()) {
+						nave.getSprite().setX(novaPos2);
+					}
 				}
 				break;
 			case Input.Keys.DPAD_UP:
-				if((spriteNau.getY()-nau.getHeight())<SCREEN_HEIGHT){
-					spriteNau.setY(spriteNau.getY()+20);
-				}
-				break;*/
-			case Input.Keys.DPAD_UP:
-				if((spriteNau.getY()-nau.getHeight())<SCREEN_HEIGHT){
-					spriteNau.setY(spriteNau.getY()+20);
+				if(nave.getSprite().getTexture() != imgElim) {
+					disparoC = 1;
+					b = new Bullet(imgbala, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), imgbala.getWidth(), imgbala.getHeight());
+					float alt = 100;
+
+					int pos = balas.size() - 1;
+					b.setY(alt);
+					b.setX(nave.getSprite().getX() + (nave.getSprite().getWidth() / 2));
+					balas.add(b);
 				}
 				break;
 		}
+
 		return false;
 	}
 
@@ -169,22 +401,31 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		lastTouch.set(screenX, screenY);
-		spriteNau.setX(screenX-20);
-		text="SHOOT";
+
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		text="NEUTRAL";
-
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-			spriteNau.setX(screenX-20);
+		if(nave.getSprite().getTexture() != imgElim) {
+
+			nave.getSprite().setX(screenX);
+
+			b = new Bullet(imgbala, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), imgbala.getWidth(), imgbala.getHeight());
+			float alt = 100;
+
+			int pos = balas.size() - 1;
+			b.setY(alt);
+			b.setX(nave.getSprite().getX() + (nave.getSprite().getWidth() / 2));
+			balas.add(b);
+			disparoC = 1;
+
+		}
 		return false;
 	}
 
@@ -198,4 +439,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		return false;
 	}
 
+	public void controlaColisions(Bullet balaAmiga){
+
+	}
 }

@@ -6,9 +6,5 @@ com/mygdx/game/R.java
  com.mygdx.game.R$style
 com/mygdx/game/BuildConfig.java
  com.mygdx.game.BuildConfig
-com/mygdx/game/Tret.java
- com.mygdx.game.Tret
-com/mygdx/game/Nau.java
- com.mygdx.game.Nau
 com/mygdx/game/AndroidLauncher.java
  com.mygdx.game.AndroidLauncher
