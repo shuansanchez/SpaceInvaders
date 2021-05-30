@@ -28,8 +28,8 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 
 	//TEXTURES
 	private Texture img;
-	private Texture imgElim;
-	private Texture imgbala;
+	private Texture texturaEliminat;
+	private Texture texturaTret;
 	private Texture imgEnemy;
 
 	//SPRITES
@@ -93,8 +93,8 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 
 		//TEXTURES
 		img = new Texture("nau1.png");
-		imgElim = new Texture("nau2e.png");
-		imgbala = new Texture("tret.png");
+		texturaEliminat = new Texture("nau2e.png");
+		texturaTret = new Texture("tret.png");
 
 		//NAU AMIGA
 
@@ -103,7 +103,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		//BALES
 		batch = new SpriteBatch();
 
-		balaAmiga = new Sprite(imgbala, 0,0,imgbala.getWidth(),imgbala.getHeight());
+		balaAmiga = new Sprite(texturaTret, 0,0,texturaTret.getWidth(),texturaTret.getHeight());
 		jugador = new Sprite(img, 0, 0, img.getWidth(), img.getHeight());
 
 		balaAmiga.setY(100);
@@ -161,7 +161,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 					Bullet b2 = balas.get(i);
 					Thread r = new Thread(b2);
 					r.start();
-					batch.draw(imgbala, b2.getX(), b2.getY());
+					batch.draw(texturaTret, b2.getX(), b2.getY());
 
 
 					for (int x = 0; x < enemigosNaves.size(); x++) {
@@ -182,7 +182,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 									}
 
 									else {
-										enemigosNaves.get(x).setTexture(imgElim);
+										enemigosNaves.get(x).setTexture(texturaEliminat);
 									}
 
 
@@ -213,14 +213,14 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 					if (b4.getX() < nave.getSprite().getX() + nave.getSprite().getTexture().getWidth() && b4.getX() > nave.getSprite().getX()) {
 
 						if (b4.getY() + b4.getHeight() >= 100) {
-							if(nave.getSprite().getTexture() != imgElim) {
+							if(nave.getSprite().getTexture() != texturaEliminat) {
 								if (contadorNave <= 0) {
 
 									vidasNave -= 1;
 									contadorNave = 100;
 
 									if (vidasNave == 0) {
-										nave.getSprite().setTexture(imgElim);
+										nave.getSprite().setTexture(texturaEliminat);
 										perdido = true;
 									}
 
@@ -300,7 +300,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 			do {
 				c = 0;
 				for(int z = 0; z < enemigosNaves.size(); z++) {
-					if (enemigosNaves.get(z).getTexture() == imgElim)
+					if (enemigosNaves.get(z).getTexture() == texturaEliminat)
 					{
 						c++;
 					}
@@ -318,14 +318,14 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 
 					for (int y = 0; y < enemigosNaves.size(); y++) {
 						//if (enemigosNaves.get(y).getTexture() != imgElim) {
-						EnemyBullet b3 = new EnemyBullet(imgbala, 0, 0, (int) enemigosNaves.get(y).getWidth(), (int) enemigosNaves.get(y).getHeight());
+						EnemyBullet b3 = new EnemyBullet(texturaTret, 0, 0, (int) enemigosNaves.get(y).getWidth(), (int) enemigosNaves.get(y).getHeight());
 						int ancho = (int) enemigosNaves.get(y).getX() + ((int) enemigosNaves.get(y).getWidth() / 2);
 						int alto = (int) enemigosNaves.get(y).getY();
 						b3.setX(ancho);
 						b3.setY(alto);
 
 						Thread tx = new Thread(b3);
-						if(enemigosNaves.get(y).getTexture() != imgElim) {
+						if(enemigosNaves.get(y).getTexture() != texturaEliminat) {
 							tx.start();
 							balasE.add(b3);
 
@@ -355,7 +355,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 		switch(keycode)
 		{
 			case Input.Keys.DPAD_LEFT:
-				if(nave.getSprite().getTexture() != imgElim) {
+				if(nave.getSprite().getTexture() != texturaEliminat) {
 					float novaPos = nave.getSprite().getX() - 40;
 					if (novaPos >= 0) {
 						nave.getSprite().setX(novaPos);
@@ -363,7 +363,7 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 				}
 				break;
 			case Input.Keys.DPAD_RIGHT:
-				if(nave.getSprite().getTexture() != imgElim) {
+				if(nave.getSprite().getTexture() != texturaEliminat) {
 					float novaPos2 = nave.getSprite().getX() + 40;
 					if (novaPos2 <= ancho - jugador.getWidth()) {
 						nave.getSprite().setX(novaPos2);
@@ -371,9 +371,9 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 				}
 				break;
 			case Input.Keys.DPAD_UP:
-				if(nave.getSprite().getTexture() != imgElim) {
+				if(nave.getSprite().getTexture() != texturaEliminat) {
 					disparoC = 1;
-					b = new Bullet(imgbala, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), imgbala.getWidth(), imgbala.getHeight());
+					b = new Bullet(texturaTret, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), texturaTret.getWidth(), texturaTret.getHeight());
 					float alt = 100;
 
 					int pos = balas.size() - 1;
@@ -410,11 +410,11 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if(nave.getSprite().getTexture() != imgElim) {
+		if(nave.getSprite().getTexture() != texturaEliminat) {
 
 			nave.getSprite().setX(screenX);
 
-			b = new Bullet(imgbala, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), imgbala.getWidth(), imgbala.getHeight());
+			b = new Bullet(texturaTret, (int) nave.getSprite().getX(), (int) nave.getSprite().getY(), texturaTret.getWidth(), texturaTret.getHeight());
 			float alt = 100;
 
 			int pos = balas.size() - 1;
@@ -435,9 +435,5 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 	@Override
 	public boolean scrolled(float amountX, float amountY) {
 		return false;
-	}
-
-	public void controlaColisions(Bullet balaAmiga){
-
 	}
 }

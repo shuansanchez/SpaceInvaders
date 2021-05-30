@@ -2,11 +2,11 @@ com/mygdx/game/Player.java
  com.mygdx.game.Player
 com/mygdx/game/EnemyBullet.java
  com.mygdx.game.EnemyBullet
-com/mygdx/game/MyGdxGame.java
- com.mygdx.game.MyGdxGame
+com/mygdx/game/Enemy.java
+ com.mygdx.game.Enemy
 com/mygdx/game/Screen.java
  com.mygdx.game.Screen
 com/mygdx/game/Bullet.java
  com.mygdx.game.Bullet
-com/mygdx/game/Enemy.java
- com.mygdx.game.Enemy
+com/mygdx/game/MyGdxGame.java
+ com.mygdx.game.MyGdxGame
