@@ -59,11 +59,9 @@ public class MyGdxGame extends ApplicationAdapter implements InputProcessor, Run
 	private  int[] vidasE;
 	private boolean perdido;
 
-
+	//CLASSES
 	private Player nave;
-	private Enemy naveEne;
 	private Bullet b;
-	private EnemyBullet bE;
 
 	private boolean bol;
 	private boolean acabado;
